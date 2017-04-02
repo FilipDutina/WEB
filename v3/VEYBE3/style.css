@@ -1,0 +1,78 @@
+body{
+	color: red;
+}
+span{
+	color: blue;
+}
+
+p > span{
+	/*PRIMENA STILA NA SPANOVE P-u*/
+	color: green;
+	background-color: blue;
+}
+
+.ultraDugme{
+	color: white;
+	background-color: black;
+}
+
+#nashaSlika:hover{
+	width: 240px;
+	height: 240px;
+}
+
+#nashaSlika {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 120px;
+    height: 120px;
+    margin:-60px 0 0 -60px;
+    -webkit-animation:spin 4s linear infinite;
+    -moz-animation:spin 4s linear infinite;
+    animation:spin 4s linear infinite;
+}
+@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+tr:nth-child(even){background-color: rgb(248, 189, 13);}
+tr:nth-child(odd){background-color: rgb(131, 11, 150);}
+
+th{
+	background-color: white;
+	color: black;
+}
+
+#txtUnos{
+	style: block;
+	width: 19.9%;
+}
+
+.numberPad{
+	background-color: white;
+	color: purple;
+}
+
+.numberPad:hover{
+	background-color: purple;
+	color: white;
+}
+
+#btnEquals{
+	background-color: yellow;
+	color: orange;
+}
+
+#btnSum{
+	background-color: pink;
+	color: red;
+}
+
+div{
+	width:500px;
+}
+
+div > button{
+	display:inline-block;
+	width:25%;
+}
