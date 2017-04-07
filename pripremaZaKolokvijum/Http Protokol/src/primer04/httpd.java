@@ -41,15 +41,28 @@ public class httpd {
 				skt = srvr.accept();
 				InetAddress addr = skt.getInetAddress();
 
-				String resource = getResource(skt.getInputStream());
+				String resource = getResource(skt.getInputStream());	//parsiranje http-a
 
+				if(resource == null)                {
+                    PrintStream ps = new PrintStream(skt.getOutputStream());
+                    // ako datoteka ne postoji, vratimo kod za gresku
+                    ps.print("HTTP/1.0 404 File not found\r\n"
+                            + "Content-type: text/html; charset=UTF-8\r\n\r\n<html><body><b>MRS 500 null tebrex  </b></body></html>");
+                               
+                     ps.flush();
+                    System.out.println("Could not find resource: " + resource);
+                    skt.close();
+                    skt = null;
+                    continue;
+                }
+				
 				if (resource.equals(""))
 					resource = "index.html";
 
 				System.out.println("Request from " + addr.getHostName() + ": "
 						+ resource);
 
-				sendResponse(resource, skt.getOutputStream());
+				sendResponse(resource, skt.getOutputStream());	//zadatak je metoda sendResponse
 				skt.close();
 				skt = null;
 			} catch (IOException ex) {
@@ -100,7 +113,65 @@ public class httpd {
 				System.out.println(ime);
 				users.add(ime);
 				ps.print(browserResponse());
-			}  else {
+			}  
+			
+			
+			//**********************************************************
+			else if(resource.startsWith("nadji?trazenoIme="))
+			{
+				int index = resource.indexOf("=");
+				String ime = resource.substring(index+1).trim();
+				ime = URLDecoder.decode(ime, "UTF-8");
+				if(users.contains(ime))
+				{
+					//zeleni H1 nadjen
+					String retVal = "HTTP/1.1 200 OK\r\nContent-Type: text/html;charset=UTF-8\r\n\r\n";
+					retVal += "<html><head><link rel='stylesheet' type='text/css' href='style.css'><title>Prijavljeni korisnici</title></head>\n";
+					retVal += "<body><h1 style='color:green'>NADJEN!</h1></body></html>";
+					ps.println(retVal);
+				}
+				else
+				{
+					//nije nadjen
+					String retVal = "HTTP/1.1 200 OK\r\nContent-Type: text/html;charset=UTF-8\r\n\r\n";
+					retVal += "<html><head><link rel='stylesheet' type='text/css' href='style.css'><title>Prijavljeni korisnici</title></head>\n";
+					retVal += "<body><h1 style='color:red'>NIJE NADJEN!</h1></body></html>";
+					ps.println(retVal);
+				}
+			}
+			
+			else if(resource.startsWith("obrisi?"))
+			{
+				int index = resource.indexOf("=");
+				int endIndex = resource.indexOf("&");
+				String ime = resource.substring(index + 1, endIndex);
+				
+				index = resource.lastIndexOf("=");
+				String boja = resource.substring(index + 1);
+				
+				//*******************************************************************
+				ime = URLDecoder.decode(ime, "UTF-8");
+				if(users.contains(ime))
+				{
+					//zeleni H1 nadjen
+					users.remove(ime);
+					String retVal = "HTTP/1.1 200 OK\r\nContent-Type: text/html;charset=UTF-8\r\n\r\n";
+					retVal += "<html><head><link rel='stylesheet' type='text/css' href='style.css'><title>Prijavljeni korisnici</title></head>\n";
+					retVal += "<body><h1 style='color:" + boja +"'>OBRISAN!</h1></body></html>";
+					ps.println(retVal);
+				}
+				else
+				{
+					//nije nadjen
+					String retVal = "HTTP/1.1 200 OK\r\nContent-Type: text/html;charset=UTF-8\r\n\r\n";
+					retVal += "<html><head><link rel='stylesheet' type='text/css' href='style.css'><title>Prijavljeni korisnici</title></head>\n";
+					retVal += "<body><h1 style='color:" + boja +"'>NIJE OBRISAN!</h1></body></html>";
+					ps.println(retVal);
+				}
+			}
+			
+			
+			else {
 				// NIJE SE POKLOPILO NI SA JEDNIM URLom za prihvatanje podataka sa forme
 				// zamenimo web separator sistemskim separatorom
 				resource = resource.replace('/', File.separatorChar);
